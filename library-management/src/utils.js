@@ -15,14 +15,15 @@ export const getThemeColors = (themeProvider) => ({
   spanColor : themeProvider ==="light"? "#e738b1" : "#af64e0ff",
 });
 export const inputStyle = {
-    width: "100%",
-    padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    marginBottom: "1px",
-    outline: "none",
-    fontSize: "15px",
-    boxSizing: "border-box"
+      backgroundColor: "#fff",
+      borderRadius: "25px",
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "25px",
+        "& fieldset": { borderColor: "#d0d0d0" },
+        "&:hover fieldset": { borderColor: "#b0b0b0" },
+        "&.Mui-focused fieldset": { borderColor: "#a044ff" },
+      },
+      "& .MuiInputAdornment-root svg": { color: "#9e9e9e" },
   };
   export const getButtonStyle = (themeProvider) =>({
     width: "100%",
