@@ -2,16 +2,18 @@ import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { getThemeColors, inputStyle, getButtonStyle, errorStyle, fieldWrapper } from '../utils.js'
-import { login } from '../api/MemberApi.jsx';
+import { login } from '../api/MemberApi.js';
 import { jwtDecode } from 'jwt-decode'
 import { TextField, InputAdornment, Button, IconButton } from "@mui/material";
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material"
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 
 function Login({ switchToSignup, themeProvider }) {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -30,6 +32,9 @@ function Login({ switchToSignup, themeProvider }) {
           const decodeToken = jwtDecode(data.access_token);
           console.log("Decoded Token:", decodeToken);
           toast.success('login successful');
+          if(decodeToken.role === 'admin'){
+          navigate('/admin');
+          }
         }
         else {
           toast.error(data.error);

@@ -5,7 +5,7 @@ import {getThemeColors, inputStyle,getButtonStyle ,errorStyle, fieldWrapper} fro
 import  {TextField , InputAdornment, Button, IconButton} from '@mui/material'
 import {AccountCircle, Email, Lock, Visibility, VisibilityOff} from "@mui/icons-material"
 import { toast } from 'react-toastify';
-import { registerMember, getAllmembers } from '../api/MemberApi.jsx';
+import { registerMember, getAllmembers } from '../api/MemberApi.js';
 
 function Signup({ switchToLogin, themeProvider }) {
   const [showPassword, setShowPassword] = useState(false);
