@@ -35,10 +35,15 @@ function Login({ switchToSignup, themeProvider }) {
           if(decodeToken.role === 'admin'){
           navigate('/admin');
           }
+          else if(decodeToken.role ==="Member"){
+            console.log("Member : ", decodeToken.sub.charAt(0))
+            navigate('/member')
+          }
         }
         else {
           toast.error(data.error);
         }
+
       } catch (error) {
         console.error("Login error:", error);
         toast.error(

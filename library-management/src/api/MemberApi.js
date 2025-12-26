@@ -55,3 +55,51 @@ export const updateMemberStatus = async (id, isActive) => {
 
   return res.data;
 };
+export const editMember = async(data,member_id) =>{
+    const res = await axios.put(`${API_URL}/members/${member_id}`,data,{
+        headers : {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true"
+        }
+    })
+    return res.data;
+}
+export const issueBookforMembers = async(book_id) =>{
+    const res = await axios.post(`${API_URL}/books/${book_id}/issue`,{},{
+        headers : {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        "ngrok-skip-browser-warning": "true"
+        }
+    })
+    return res.data;
+}
+
+export const returnBookforLibrary = async(issue_id) =>{
+    const res = await axios.post(`${API_URL}/books/return/${issue_id}`,{},{
+        headers : {
+         Authorization: `Bearer ${localStorage.getItem('token')}`,
+          "ngrok-skip-browser-warning": "true"
+        }
+    })
+    return res.data
+}
+export const avaiableCount = async(book_id) =>{
+    const res = await axios.get(`${API_URL}/books/${book_id}/available-count`,{
+        headers : {
+            "ngrok-skip-browser-warning": "true" 
+        }
+    })
+    return res.data;
+} 
+
+export const getBookStore = async(member_id) =>{
+    const res = await axios.get(`${API_URL}/books/${member_id}/details`,{
+        headers : {
+        "Content-Type": "application/json",
+         Authorization: `Bearer ${localStorage.getItem('token')}`,
+         "ngrok-skip-browser-warning":"true",
+        }
+    })
+    return res.data;
+}
