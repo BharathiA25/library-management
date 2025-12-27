@@ -1,32 +1,17 @@
 import React, { useState } from 'react'
-import Login from '../components/Login'
-import Signup from '../components/Signup'
-import { Box, Button, colors, Container, Paper, Toolbar, Typography } from '@mui/material'
-import { LightMode, DarkMode, Style } from '@mui/icons-material'
-import { getThemeColors } from '../utils.js'
+import Login from './Login.jsx'
+import Signup from './Signup.jsx'
+import { Box, Button, Paper, Toolbar, Typography } from '@mui/material'
+import { getThemeControl } from '../utils.js'
 function UserLandingpage() {
 
   const [activeForm, setActiveForm] = useState("login")
-  const [themeProvider, setThemeProvider] = useState('dark');
-  const { bgColor, textColor, paperColor, lightTheme, darkTheme } = getThemeColors(themeProvider);
+  const { bgColor, textColor, paperColor,buttonTransparent,helpingColor} = getThemeControl();
 
   return (
     <>
       <Box sx={{ minHeight: '100dvh', overflow: 'hidden',width:'100vw', background: bgColor }}>
-        <Toolbar sx={{
-          position: "absolute",
-          top: 10,
-          right: 10,
-          backgroundColor: '#74585850',
-          minHeight: '20px !important',
-          width: '130px',
-          borderRadius: '10px',
-          border: "1px solid rgba(0,0,0,0.2)",
-          padding: "0 !important",
-        }}>
-          <Button onClick={() => setThemeProvider("light")} ><LightMode sx={{ color: lightTheme }} /></Button>
-          <Button onClick={() => setThemeProvider("dark")}><DarkMode sx={{ color: darkTheme }} /></Button>
-        </Toolbar>
+       
         <Box sx={{
           minHeight: "100dvh",
           display: "flex",
@@ -57,25 +42,8 @@ function UserLandingpage() {
                     borderRadius: "10px",
                     textTransform: "none",
                     fontWeight: "600",
-
-                    background:
-                      themeProvider === "light"
-                        ? activeForm === "login"
-                          ? "linear-gradient(to right, #a044ff, #e738b1)"
-                          : "transparent"
-                        : activeForm === "login"
-                          ? "linear-gradient(to bottom right, #130223ff, #3d0066)"
-                          : "transparent",
-
-                    color:
-                      themeProvider === "light"
-                        ? activeForm === "login"
-                          ? "#fff"
-                          : "#000"
-                        : activeForm === "login"
-                          ? "#fff"
-                          : "#fff",
-
+                    background: activeForm ==="login"? bgColor : buttonTransparent ,
+                    color: activeForm ==="login"?textColor : helpingColor,
                     transition: "0.3s",
                   }}
 
@@ -90,24 +58,8 @@ function UserLandingpage() {
                     borderRadius: "10px",
                     textTransform : "none",
                     fontWeight: "600",
-
-                    background:
-                      themeProvider === "dark"
-                      ?activeForm === "signup"
-                        ? "linear-gradient(to bottom right, #130223ff, #3d0066)"
-                        : "transparent"
-                      : activeForm === "signup"
-                      ? "linear-gradient(to right, #a044ff, #e738b1)"
-                      :"transparent",
-                    color:
-                      themeProvider === "dark"
-                        ? activeForm === "signup"
-                          ? "#fff"
-                          : "#fff"
-                        : activeForm === "signup"
-                          ? "#fff"
-                          : "#000",
-
+                    background: activeForm ==="signup"? bgColor : buttonTransparent ,
+                    color: activeForm ==="signup"?textColor : helpingColor,
                     transition: "0.3s",
                   }}
                 >
@@ -119,8 +71,8 @@ function UserLandingpage() {
 
             </Box>
             {activeForm === 'login' ?
-              <Login switchToSignup={() => setActiveForm("signup")} themeProvider={themeProvider} />
-              : <Signup switchToLogin={() => setActiveForm("login")} themeProvider={themeProvider} />}
+              <Login switchToSignup={() => setActiveForm("signup")} />
+              : <Signup switchToLogin={() => setActiveForm("login")} />}
 
           </Paper>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { getThemeColors, inputStyle, getButtonStyle, errorStyle, fieldWrapper } from '../utils.js'
+import { getThemeControl } from '../utils.js'
 import { login } from '../api/MemberApi.js';
 import { jwtDecode } from 'jwt-decode'
 import { TextField, InputAdornment, Button, IconButton } from "@mui/material";
@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 
-function Login({ switchToSignup, themeProvider }) {
+function Login({ switchToSignup}) {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const navigate = useNavigate();
@@ -54,8 +54,7 @@ function Login({ switchToSignup, themeProvider }) {
       }
     }
   });
-  const { textColor, spanColor } = getThemeColors(themeProvider);
-  const buttonStyle = getButtonStyle(themeProvider);
+  const { spanColor, buttonStyle, helpingColor,fieldWrapper,inputStyle,errorStyle } = getThemeControl();
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
@@ -117,7 +116,7 @@ function Login({ switchToSignup, themeProvider }) {
           Login
         </Button>
       </form>
-            <p style={{ padding: '20px', marginTop: '10px', textAlign: 'center', color: textColor }}> Not a member ? <span style={{ color: spanColor, cursor: 'pointer' }} onClick={switchToSignup}>Signup now</span> </p>
+            <p style={{ padding: '20px', marginTop: '10px', textAlign: 'center', color: helpingColor }}> Not a member ? <span style={{ color: spanColor, cursor: 'pointer' }} onClick={switchToSignup}>Signup now</span> </p>
     </>
   )
 }

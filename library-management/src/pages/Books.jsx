@@ -10,6 +10,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import BookForm from "../dialogBox/BookForm";
 import DeleteBook from "../dialogBox/DeleteBook";
 import CopiesManage from "../dialogBox/CopiesManage";
+import { toast } from "react-toastify";
 import { 
   getAllBooks, addBook, deleteBook, updateBook, 
   createCopies, getBookCopies, updateCopyStatus, deleteCopy 
@@ -61,8 +62,10 @@ function Books() {
 
   if (values.id) {
     await updateBook(values.id, formData);
+    toast.success("Book updated successfully");
   } else {
     await addBook(formData);
+    toast.success("Book added successfully")
   }
   
   setOpenForm(false);
@@ -71,6 +74,7 @@ function Books() {
 }
 catch(err){
   console.log("Handle save error ", err)
+  toast.error(err)
 }
 };
 const handleCloseBook = () => {

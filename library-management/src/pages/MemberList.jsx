@@ -3,14 +3,14 @@ import { DataGrid } from '@mui/x-data-grid';
 import { getAllmembers, deleteMember, updateMemberStatus } from '../api/MemberApi.js';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Box , Typography} from "@mui/material";
 import {toast} from 'react-toastify'
-
+import { getThemeControl } from '../utils.js';
 function MemberList() {
   const [rows, setRows] = useState([]);
   const [loadingRowId, setLoadingRowId] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogType, setDialogType] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
-
+  const {textColor,memberHeadColor, memberCellColor,activeColor, inActiveColor, activeColorHover, inActiveColorHover} =getThemeControl() 
   const fetchMembers = async () => {
     try {
       const members = await getAllmembers();
@@ -90,14 +90,14 @@ function MemberList() {
           <Button
             disabled={isLoading}
             sx={{
-              backgroundColor: params.value ? '#2e7d32' : '#d32f2f',
-              color: 'white',
+              backgroundColor: params.value ? activeColor : inActiveColor,
+              color: textColor,
               textTransform: 'none',
               borderRadius: '20px',
               width: '90px',
               height: '30px',
               fontSize: '0.8rem',
-              '&:hover': { backgroundColor: params.value ? '#1b5e20' : '#c62828' }
+              '&:hover': { backgroundColor: params.value ? activeColorHover : inActiveColorHover }
             }}
             onClick={() => handleOpenDialog("status", params.row)}
           >
@@ -128,7 +128,7 @@ function MemberList() {
       }
     }
   ];
-
+ 
   return (
     <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <DataGrid
@@ -140,20 +140,22 @@ function MemberList() {
         sx={{
           border: 'none',
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: "#1656cc",
-            color: "#fff",
+            backgroundColor: memberHeadColor,
+            color: textColor,
           },
           '& .MuiDataGrid-columnHeader': {
-            backgroundColor: "#1656cc",
+            backgroundColor: memberHeadColor,
           },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 'bold',
-            color: '#fff',
+            color: textColor,
           },
           '& .MuiDataGrid-cell': {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            color : textColor,
+            backgroundColor:memberCellColor
           },
           '& .MuiDataGrid-columnHeaderTitleContainer': {
             justifyContent: 'center',

@@ -1,29 +1,26 @@
 import { Box, Button, Typography } from "@mui/material";
 import { People, Book } from "@mui/icons-material";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { getThemeControl } from "../utils";
 
 function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const {adminPanelColor, textColor, sidebarInActive,sidebarButtonColor} = getThemeControl()
+  const isMembersActive = location.pathname.includes("members");
+  const isBookActive = location.pathname.includes("books")
   return (
     <Box sx={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* HEADER */}
-      <Box
-        sx={{
-          height: 70,
-          backgroundColor: "#1a4ca2",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 20,
-          fontWeight: "bold",
-          flexShrink: 0, // Prevents header from shrinking
-        }}
-      >
-        Admin Dashboard
-      </Box>
+      <Box sx={{height: 70,
+  backgroundColor: adminPanelColor,
+  color: "#fff",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 20,
+  fontWeight: "bold",
+  flexShrink: 0}} > Admin Dashboard </Box>
 
       {/* BODY CONTAINER */}
       <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
@@ -31,24 +28,33 @@ function AdminDashboard() {
         {/* SIDEBAR */}
         <Box
           sx={{
-            width: "20%", // Replaces md={2.4}
-            backgroundColor: "#f4f6f8",
+            width: "10%", // Replaces md={2.4}
+            backgroundColor: adminPanelColor,
             borderRight: "1px solid #ddd",
             p: 2,
             display: "flex",
             flexDirection: "column",
           }}
         >
-          <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold" }}>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color:textColor }}>
             Admin Panel
           </Typography>
 
           <Button
             fullWidth
             startIcon={<People />}
-            variant={location.pathname.includes("members") ? "contained" : "text"}
-            sx={{ mb: 2, justifyContent: "flex-start" }}
-            onClick={() => navigate("/admin/members")}
+            variant={isMembersActive ? "contained" : "text"}
+            sx={{ 
+              mb: 2, 
+              justifyContent: "flex-start",
+              color: isMembersActive ? textColor : sidebarInActive,
+              backgroundColor: isMembersActive ? sidebarButtonColor : "transparent",
+              "&:hover": {
+            backgroundColor: sidebarButtonColor,
+              },
+            }}
+              
+              onClick={() => navigate("/admin/members")}
           >
             Members
           </Button>
@@ -56,8 +62,15 @@ function AdminDashboard() {
           <Button
             fullWidth
             startIcon={<Book />}
-            variant={location.pathname.includes("books") ? "contained" : "text"}
-            sx={{ justifyContent: "flex-start" }}
+            variant={isBookActive ? "contained" : "text"}
+            sx={{ 
+              justifyContent: "flex-start",
+              color: isBookActive  ? textColor : sidebarInActive,
+              backgroundColor: isBookActive  ? sidebarButtonColor : "transparent",
+              "&:hover": {
+            backgroundColor: sidebarButtonColor,
+              },
+            }}
             onClick={() => navigate("/admin/books")}
           >
             Books
@@ -67,7 +80,7 @@ function AdminDashboard() {
         {/* MAIN CONTENT AREA */}
         <Box 
           sx={{ 
-            width: "80%", // Replaces md={9.6}
+            width: "90%", // Replaces md={9.6}
             p: 3, 
             backgroundColor: "#eff1f3ff", 
             display: "flex",

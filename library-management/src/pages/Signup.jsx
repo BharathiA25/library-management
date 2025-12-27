@@ -1,13 +1,13 @@
 import React , {useState} from 'react'
 import {useFormik}from 'formik'
 import * as Yup from 'yup';
-import {getThemeColors, inputStyle,getButtonStyle ,errorStyle, fieldWrapper} from '../utils.js'
+import { getThemeControl } from '../utils.js'
 import  {TextField , InputAdornment, Button, IconButton} from '@mui/material'
 import {AccountCircle, Email, Lock, Visibility, VisibilityOff} from "@mui/icons-material"
 import { toast } from 'react-toastify';
 import { registerMember, getAllmembers } from '../api/MemberApi.js';
 
-function Signup({ switchToLogin, themeProvider }) {
+function Signup({ switchToLogin}) {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const formik = useFormik({
@@ -58,8 +58,7 @@ function Signup({ switchToLogin, themeProvider }) {
       }
     },
   })
-  const {textColor, spanColor} = getThemeColors(themeProvider)
-  const buttonStyle = getButtonStyle(themeProvider);
+const { spanColor, buttonStyle, helpingColor,fieldWrapper,inputStyle,errorStyle } = getThemeControl();
   return (
   <>
   <form onSubmit={formik.handleSubmit}>
@@ -181,7 +180,7 @@ function Signup({ switchToLogin, themeProvider }) {
       </Button>
 
     </form>
-     <p style={{padding:'20px' ,marginTop:'10px', textAlign:'center' , color:textColor}}> All ready have an account? <span style={{color: spanColor ,cursor:'pointer'}} onClick={switchToLogin}>Login</span> </p>
+     <p style={{padding:'20px' ,marginTop:'10px', textAlign:'center' , color:helpingColor}}> All ready have an account? <span style={{color: spanColor ,cursor:'pointer'}} onClick={switchToLogin}>Login</span> </p>
 
   </>
   );

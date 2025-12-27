@@ -3,6 +3,7 @@ import { Box, Grid, Card, CardMedia, CardContent, Typography, Button, Dialog, Di
 import { jwtDecode } from "jwt-decode";
 import { getBookStore, returnBookforLibrary } from "../api/MemberApi";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const IMAGE_BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
 
@@ -10,6 +11,7 @@ function MemberStore() {
   const [books, setBooks] = useState([]);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchStore();
@@ -141,6 +143,7 @@ function MemberStore() {
           toast.success("Book returned successfully");
           setOpenConfirm(false);
           fetchStore(); // refresh list
+          navigate('/member/books')
         } catch (err) {
           toast.error(err);
         }

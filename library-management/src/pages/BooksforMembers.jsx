@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Card, CardMedia, CardContent, Typography, Chip } from "@mui/material";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ErrorOutline, Store } from "@mui/icons-material";
 import { getAllBooks } from "../api/booksApi";
 import { avaiableCount, issueBookforMembers } from "../api/MemberApi";
 import { toast } from "react-toastify";
+import StoreBook from "../dialogBox/StoreBook";
 
 
 
@@ -55,7 +55,25 @@ function BooksforMembers() {
         path
             ? `${IMAGE_BASE_URL}/${path.replace(/\\/g, "/")}`
             : "https://via.placeholder.com/300x400";
-
+    const handleAddToStore = async() =>{
+        if(!selectedBook) return
+        try{
+            setIssuing(true);
+            const res = await issueBookforMembers(selectedBook.id);
+            toast.success("Added to store successfully");
+            setOpenConfirm(false);
+            setSelectedBook(null);
+            fetchBooksWithAvailability();
+            navigate("/member/store");
+        }
+        catch(err){
+            const msg = err?.response?.data?.detail?.message || "Failed to add book";
+            toast.error(msg);
+        }
+        finally{
+            setIssuing(false)
+        }
+    }
     return (
         <>
             <Typography variant="h5" fontWeight="bold" mb={3}>
@@ -149,49 +167,12 @@ function BooksforMembers() {
                     );
                 })}
             </Grid>
-            <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-                <DialogTitle>Confirm</DialogTitle>
-                <DialogContent>
-                    Are you sure to add this book into your store?
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenConfirm(false)}>Cancel</Button>
-                    <Button
-                        variant="contained"
-                        disabled={issuing}
-                        onClick={async () => {
-                            try {
-                                setIssuing(true);
-
-                                const res = await issueBookforMembers(selectedBook.id);
-
-                                toast.success("Added to store successfully");
-
-                                setOpenConfirm(false);
-                                setSelectedBook(null);
-
-                                fetchBooksWithAvailability();
-
-                                navigate("/member/store");
-                            } catch (err) {
-                                // backend error message handling
-                                const msg =
-                                    err?.response?.data?.message ||
-                                    err?.response?.data?.detail ||
-                                    "Failed to add book";
-
-                                toast.error(msg);
-                            } finally {
-                                setIssuing(false);
-                            }
-                        }}
-                    >
-                        Add to store
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-        </>
+            <StoreBook
+            open={openConfirm}
+            onClose={()=>setOpenConfirm(false)}
+            addToStore={handleAddToStore}
+            issuing={issuing}/>
+           </>
     );
 }
 
