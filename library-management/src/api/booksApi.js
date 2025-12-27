@@ -1,24 +1,38 @@
 import axios from "axios";
 
 const API_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
-
-const publicHeaders = {
-  "ngrok-skip-browser-warning": "true"
-};
-const adminHeaders = {
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
-  "ngrok-skip-browser-warning": "true",
-  "Content-Type":"multipart/form-data"
-};
-
 // --- BOOKS ---
 export const getAllBooks = async () => {
-  const res = await axios.get(`${API_URL}/books`, { headers: publicHeaders, });
+  const res = await axios.get(`${API_URL}/books`, { 
+    headers : {
+      "ngrok-skip-browser-warning": "true"
+    }
+  });
   return res.data;
 };
 
-export const addBook = async (data) => axios.post(`${API_URL}/books/`, data, {headers: adminHeaders});
-export const updateBook = async (id, data) => axios.put(`${API_URL}/books/${id}`, data, { headers: adminHeaders });
+export const addBook = async (data) => {
+   const res = await axios.post(`${API_URL}/books/`, data, {
+  headers : {
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+  "ngrok-skip-browser-warning": "true",
+  "Content-Type":"multipart/form-data"
+  }
+  })
+  return res.data;
+}
+  
+
+export const updateBook = async (id, data) =>{
+  const res = await axios.put(`${API_URL}/books/${id}`, data, {
+  headers : {
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+  "ngrok-skip-browser-warning": "true",
+  "Content-Type":"multipart/form-data"
+  }
+})
+  return res.data;
+}
 export const deleteBook = async (id) => axios.delete(`${API_URL}/books/${id}`, { 
   headers : {
   Authorization: `Bearer ${localStorage.getItem("token")}`,

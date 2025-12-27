@@ -150,7 +150,7 @@ const handleDeleteBook = async(id) =>{
           const count = copiesCountMap[book.id] || 0;
           const hasCopies = count > 0;
           return (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
+            <Grid container justifyContent="center" key={book.id}>
               <Card sx={{ borderRadius: 4, position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 
                 {/* Availability Overlay */}

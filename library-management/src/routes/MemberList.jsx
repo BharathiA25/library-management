@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
 import { getAllmembers, deleteMember, updateMemberStatus } from '../api/MemberApi.js';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Box , Typography} from "@mui/material";
+import {toast} from 'react-toastify'
 
 function MemberList() {
   const [rows, setRows] = useState([]);
@@ -47,10 +48,23 @@ function MemberList() {
     handleCloseDialog();
     try {
       if (dialogType === "status") {
+        try{
         await updateMemberStatus(selectedMember.id, !selectedMember.is_active);
+        toast.success("switch status changed")
+        }
+        catch(err){
+          toast.error("Member was taken book from library")
+        }
+        
       }
       if (dialogType === "delete") {
+        try{
         await deleteMember(selectedMember.id);
+        toast.success("Deleted succesfully")
+        }
+        catch(err){
+          toast.error("Member was taken book from library")
+        }
       }
       await fetchMembers();
     } catch (err) {
