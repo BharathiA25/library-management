@@ -7,10 +7,14 @@ import { getAllmembers, editMember } from "../api/MemberApi";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { getThemeControl } from "../utils";
+import CommonShimmer from "../components/CommonShimmer";
 
 function EditProfile() {
   const [memberId, setMemberId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(true)
+  const {selectedColor, inputStyle,buttonStyle,helpingColor} = getThemeControl()
   const navigate = useNavigate()
   const formik = useFormik({
     initialValues: { name: "", email: "", password: "" },
@@ -34,15 +38,24 @@ function EditProfile() {
 
   useEffect(() => {
     const fetchMember = async () => {
+      try{
+        setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) return;
       const { user_id } = jwtDecode(token);
       const members = await getAllmembers();
       const me = members.find((m) => Number(m.id) === Number(user_id));
       if (!me) return;
-      setMemberId(me.id);
       formik.setValues({ name: me.name, email: me.email, password: "" });
-    };
+      setMemberId(me.id);
+    }
+    catch(err){
+      console.log(err)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
     fetchMember();
   }, []);
 
@@ -64,10 +77,11 @@ function EditProfile() {
           borderRadius: 3,
         }}
       >
-        <Typography variant="h6" fontWeight={600} mb={2} textAlign="center">
+        <Typography variant="h6" fontWeight={600} mb={2} textAlign="center" color= {selectedColor}>
           Edit Profile
         </Typography>
-
+        {loading ? ( <CommonShimmer type="form"/> 
+        ) : (
         <form onSubmit={formik.handleSubmit}>
           {/* NAME */}
           <TextField
@@ -75,6 +89,7 @@ function EditProfile() {
             label="Name"
             margin="normal"
             name="name"
+            sx={inputStyle}
             value={formik.values.name}
             onChange={formik.handleChange}
             error={formik.touched.name && Boolean(formik.errors.name)}
@@ -82,7 +97,7 @@ function EditProfile() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <AccountCircle color="primary" />
+                  <AccountCircle sx={{color: helpingColor}} />
                 </InputAdornment>
               ),
             }}
@@ -95,6 +110,7 @@ function EditProfile() {
             margin="normal"
             disabled
             name="email"
+            sx={inputStyle}
             value={formik.values.email}
             InputProps={{
               startAdornment: (
@@ -110,6 +126,7 @@ function EditProfile() {
             fullWidth
             label="New Password (optional)"
             margin="normal"
+            sx={inputStyle}
             type={showPassword ? "text" : "password"}
             name="password"
             value={formik.values.password}
@@ -121,7 +138,7 @@ function EditProfile() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Lock color="primary" />
+                  <Lock sx={{color:helpingColor}} />
                 </InputAdornment>
               ),
               endAdornment: (
@@ -142,16 +159,11 @@ function EditProfile() {
             fullWidth
             size="large"
             variant="contained"
-            sx={{
-              mt: 3,
-              py: 1.2,
-              borderRadius: 2,
-              fontWeight: 600,
-            }}
+            sx={buttonStyle}
           >
             Update Profile
           </Button>
-        </form>
+        </form> )}
       </Paper>
     </Box>
   );

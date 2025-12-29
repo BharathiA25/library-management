@@ -2,8 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, MenuItem } from '@mui/material'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import { getThemeControl } from '../utils'
+import { CircularProgress } from "@mui/material";
+
 function BookForm({ open, onClose, onSave, selectedBook }) {
   const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
+
+  const {inputStyle, textColor,errorStyle, selectedColor, addColor, updateColor, disableColor, imageBg} = getThemeControl();
+
   useEffect(() => {
     if (open) {
       if (selectedBook) {
@@ -17,26 +25,6 @@ function BookForm({ open, onClose, onSave, selectedBook }) {
       }
     }
   }, [selectedBook, open]);
-
-  const textFieldStyle = {
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "12px",
-      "> fieldset": {
-        borderRadius: "12px",
-      },
-    }
-  };
-
-const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
-
-  useEffect(() => {
-    if (selectedBook?.image) {
-      const cleanPath = selectedBook.image.replace(/\\/g, "/");
-      setPreview(`${BASE_URL}/${cleanPath}`);
-
-    }
-  }, [selectedBook]);
-  
   const formik = useFormik({
      enableReinitialize: true,
      initialValues: {
@@ -56,16 +44,28 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
       })
     }),
      onSubmit: async (values, {resetForm}) => {
+      try{
+       setLoading(true) 
        await onSave({...values,id : selectedBook?.id})
        resetForm();
        setPreview(null);
+       onclose()
+      }
+      catch(err){
+        console.log(err)
+      }
+      finally{
+        setLoading(false)
+      }
       }
    });
-   const handleClose = () =>{
-     formik.resetForm();   
-     setPreview(null);
-     onClose()
-   }
+ 
+  const handleClose = (event, reason) => {
+    if (reason === "backdropClick" || reason === "escapeKeyDown") return;
+    formik.resetForm();
+    setPreview(null);
+    onClose();
+  };
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     formik.setFieldValue("imageFile", file);
@@ -74,6 +74,7 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
       setPreview(URL.createObjectURL(file));
     }
   }
+  
   return (
     <div>
        <Dialog open={open} onClose={handleClose} 
@@ -84,14 +85,13 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
             padding: 0,
             borderRadius: "20px",
             overflow: "hidden",
-            backgroundColor: "#ffffffff"
           }
         }}> 
           <DialogTitle
             sx={{
             textAlign: 'center',
             fontWeight: '700',
-            color: selectedBook ? "#e3be09ff" : "#20c62dff"
+            color: selectedBook ? updateColor : addColor
           }}>
             {selectedBook ? "Update Book Details" : "Register New Book"}</DialogTitle>
           <DialogContent>
@@ -100,7 +100,7 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
             <TextField 
             placeholder="Title" 
             name="title"
-            sx={textFieldStyle} 
+            sx={inputStyle} 
             value={formik.values.title}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -109,7 +109,7 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
             <TextField 
             placeholder="Author" 
             name="author"
-            sx={textFieldStyle} 
+            sx={inputStyle} 
             value={formik.values.author}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -120,7 +120,7 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
                 select
                 name="category"
                 placeholder='Select Category'
-                sx={textFieldStyle}
+                sx={inputStyle}
                 value={formik.values.category}
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
@@ -129,7 +129,7 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
                 SelectProps={{ displayEmpty: true }}
               >
                 <MenuItem value="" disabled>
-                  <span style={{ color: "#999" }}>Select Category</span>
+                  <span style={{ color: disableColor }}>Select Category</span>
                 </MenuItem>
                 <MenuItem value="programming">Programming</MenuItem>
                 <MenuItem value="science">Science</MenuItem>
@@ -141,8 +141,8 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
                   htmlFor="image"
                   style={{
                     padding: "10px 14px",
-                    backgroundColor: "#1976d2",
-                    color: "#fff",
+                    backgroundColor: imageBg,
+                    color: textColor,
                     borderRadius: "8px",
                     cursor: "pointer",
                     width: "fit-content",
@@ -159,13 +159,13 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
                   onChange={handleImageChange}
                 />
                 {formik.values.image && (
-                  <span style={{ fontSize: "14px", color: "#333" }}>
+                  <span style={{ fontSize: "14px", color: selectedColor }}>
                     Selected: {formik.values.image.split("/").pop()}
                   </span>
                 )}
 
                 {formik.touched.image && formik.errors.image && (
-                  <p style={{ color: "red", margin: 0 }}>{formik.errors.image}</p>
+                  <p style={errorStyle}>{formik.errors.image}</p>
                 )}
               </div>
 
@@ -178,19 +178,22 @@ const BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
               )}
               </div>
           <DialogActions>
-              <Button sx={{ color: 'red', textTransform: 'capitalize' }} onClick={onClose}>
+              <Button sx={{ color: 'red', textTransform: 'capitalize' }} disabled ={loading} onClick={handleClose}>
                 Cancel
               </Button>
               <Button
                 variant="contained"
+                disabled ={loading}
                 sx={{
-                  backgroundColor: selectedBook ? "#e3be09ff" : "#20c62dff",
+                  backgroundColor: selectedBook ? updateColor : addColor,
                   borderRadius: '25px',
                   textTransform: 'capitalize'
                 }}
                 type="submit"
               >
-                {selectedBook ? "Update" : "Add"}
+                {loading ? (
+                  <CircularProgress size={20} sx={{ color: "white" }} />
+                ): selectedBook ? "Update" : "Add"}
               </Button>
             </DialogActions>
           </form>

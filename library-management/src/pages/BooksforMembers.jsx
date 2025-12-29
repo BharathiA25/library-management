@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid, Card, CardMedia, CardContent, Typography, Chip } from "@mui/material";
+import { Box, Grid, Card, CardMedia, CardContent, Typography, Chip , Button} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ErrorOutline, Store } from "@mui/icons-material";
 import { getAllBooks } from "../api/booksApi";
 import { avaiableCount, issueBookforMembers } from "../api/MemberApi";
 import { toast } from "react-toastify";
 import StoreBook from "../dialogBox/StoreBook";
-
-
-
+import { getThemeControl } from "../utils";
+import CommonShimmer from "../components/CommonShimmer";
 const IMAGE_BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
-
+const { activeColor, copiesColor, textColor, inActiveColor } = getThemeControl();
 function BooksforMembers() {
     const [books, setBooks] = useState([]);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
     const [issuing, setIssuing] = useState(false);
+    const [loading, setLoading ] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,6 +24,7 @@ function BooksforMembers() {
 
     const fetchBooksWithAvailability = async () => {
         try {
+            setLoading(true)
             const res = await getAllBooks();
             const booksData = Array.isArray(res) ? res : res.data || [];
 
@@ -48,16 +49,20 @@ function BooksforMembers() {
 
             setBooks(booksWithAvailability);
         } catch (error) {
+            toast.error("Failed to load books")
             console.error("Failed to load books", error);
+        }
+        finally{
+            setLoading(false)
         }
     };
     const getImage = (path) =>
         path
             ? `${IMAGE_BASE_URL}/${path.replace(/\\/g, "/")}`
             : "https://via.placeholder.com/300x400";
-    const handleAddToStore = async() =>{
-        if(!selectedBook) return
-        try{
+    const handleAddToStore = async () => {
+        if (!selectedBook) return
+        try {
             setIssuing(true);
             const res = await issueBookforMembers(selectedBook.id);
             toast.success("Added to store successfully");
@@ -66,11 +71,11 @@ function BooksforMembers() {
             fetchBooksWithAvailability();
             navigate("/member/store");
         }
-        catch(err){
+        catch (err) {
             const msg = err?.response?.data?.detail?.message || "Failed to add book";
             toast.error(msg);
         }
-        finally{
+        finally {
             setIssuing(false)
         }
     }
@@ -79,7 +84,9 @@ function BooksforMembers() {
             <Typography variant="h5" fontWeight="bold" mb={3}>
                 Available Books
             </Typography>
-
+            {loading ? (
+                <CommonShimmer type="cardGrid" count={8} />
+            ) : (
             <Grid container spacing={3} justifyContent="center">
                 {books.map((book) => {
                     const available = book.availableCopies || 0;
@@ -88,20 +95,17 @@ function BooksforMembers() {
                         <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
                             <Card
                                 sx={{
+                                    height: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    borderRadius: 4,
                                     position: "relative",
-                                    borderRadius: 3,
+                                    boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
                                     cursor: available ? "pointer" : "not-allowed",
-                                    overflow: "hidden",
                                     transition: "0.3s",
-                                    "&:hover .hoverOverlay": {
-                                        opacity: available ? 1 : 0
-                                    }
-                                }}
-                                onClick={() => {
-                                    if (available > 0) {
-                                        setSelectedBook(book);
-                                        setOpenConfirm(true);
-                                    }
+                                    "&:hover": {
+                                        transform: available ? "translateY(-6px)" : "none",
+                                    },
                                 }}
                             >
                                 {/* UNAVAILABLE CHIP */}
@@ -118,34 +122,17 @@ function BooksforMembers() {
                                 {/* IMAGE */}
                                 <CardMedia
                                     component="img"
-                                    height="260"
                                     image={getImage(book.cover_image)}
                                     alt={book.title}
                                     sx={{
+                                        width: "200px",      // fills card width
+                                        height: "180px",        // fixed height for all images
+                                        objectFit: "cover", // crops/adjusts image to fit
+                                        p:2,
+                                        borderRadius:'25px',
                                         filter: available !== 0 ? "none" : "grayscale(100%)",
-                                        transition: "0.3s"
                                     }}
                                 />
-
-                                {/* HOVER OVERLAY */}
-                                <Box
-                                    className="hoverOverlay"
-                                    sx={{
-                                        position: "absolute",
-                                        inset: 0,
-                                        backgroundColor: "rgba(0,0,0,0.6)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        color: "#55acbcff",
-                                        fontSize: 18,
-                                        fontWeight: "bold",
-                                        opacity: 0,
-                                        transition: "0.3s"
-                                    }}
-                                >
-                                    <Store sx={{ mr: 1 }} /> Add to Store
-                                </Box>
 
                                 {/* CONTENT */}
                                 <CardContent>
@@ -155,24 +142,41 @@ function BooksforMembers() {
                                     <Typography variant="body2" color="text.secondary">
                                         {book.author}
                                     </Typography>
+                                    {available !== 0 ? (
+                                    <Box sx={{display:'flex', justifyContent:'space-between',alignItems:'center'}}>  
                                     <Typography
                                         variant="caption"
-                                        color={available > 0 ? "success.main" : "error.main"}
+                                        sx={{ justifyContent:'flex-start' }}
+                                        color={available > 0 ? copiesColor : "error.main"}
                                     >
-                                        Available: {available}
+                                    Available: {available}
                                     </Typography>
+                                    <Button onClick={() => {
+                                        setSelectedBook(book);
+                                        setOpenConfirm(true);
+                                }}
+                                sx={{textTransform : 'capitalize', backgroundColor: activeColor, color:textColor, fontSize:'12px'}}>
+                                     Add to store
+                                    </Button>
+                                    </Box>  ) : (
+                                        <Typography sx={{textAlign : 'center', m:3, color:inActiveColor}}>
+                                            Added soon
+                                        </Typography>
+                                    )
+                                }
+                
                                 </CardContent>
                             </Card>
                         </Grid>
                     );
                 })}
-            </Grid>
+            </Grid> ) }
             <StoreBook
-            open={openConfirm}
-            onClose={()=>setOpenConfirm(false)}
-            addToStore={handleAddToStore}
-            issuing={issuing}/>
-           </>
+                open={openConfirm}
+                onClose={() => setOpenConfirm(false)}
+                addToStore={handleAddToStore}
+                issuing={issuing} />
+        </>
     );
 }
 

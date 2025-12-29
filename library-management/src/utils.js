@@ -42,6 +42,7 @@ fieldWrapper : {
   marginBottom: "18px",
 },
 adminPanelColor :  "#a807e7ff",
+userPanelBg : "#762b94ff",
 sidebarInActive : "#ec7676ff",
 sidebarButtonColor : {
      width: "100%",
@@ -54,8 +55,18 @@ sidebarButtonColor : {
 }, 
 memberHeadColor : "#095f77ab",
 memberCellColor : "#0488adab",
-activeColor : 'green',
-inActiveColor:'red',
-activeColorHover: '#082e06ff',
-inActiveColorHover:'#5e1313ff'
+activeColor : '#50cd49ff',
+inActiveColor:'#e72d2dff',
+activeColorHover: '#118b0aff',
+inActiveColorHover:'#830a0aff',
+deleteColor:'#e72d2dff',
+deleteColorHover :'#830a0aff',
+cardBg : '#6dc5bbff',
+copiesColor : '#1976d2',
+selectedColor : "#333",
+addColor : '#20c62dff',
+updateColor : '#e3be09ff',
+disableColor : '#999',
+imageBg : "#1976d2",
+
 })

@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Box, Typography, IconButton,  Menu, MenuItem, Divider} from "@mui/material";
 import{AccountCircle , Store, Edit,Logout,Book} from "@mui/icons-material";
 import { useNavigate, Outlet } from "react-router-dom";
-
+import { getThemeControl } from "../utils";
 function UserDashboard() {
   const navigate = useNavigate();
+  const {bgColor, textColor, userPanelBg} = getThemeControl()
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -33,9 +34,9 @@ function UserDashboard() {
       {/* HEADER */}
       <Box
         sx={{
-          height: 70,
-          backgroundColor: "#1a4ca2",
-          color: "#fff",
+          minHeight:'70px',
+          background: bgColor,
+          color :textColor,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -59,7 +60,7 @@ function UserDashboard() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem onClick={goToBooks}>
+        <MenuItem onClick={goToBooks} >
           <Book sx={{ mr: 1 }} /> Books
         </MenuItem>
 
@@ -87,7 +88,7 @@ function UserDashboard() {
       </Menu>
 
       {/* MAIN CONTENT */}
-      <Box sx={{ flexGrow: 1, p: 3, backgroundColor: "#eff1f3" }}>
+      <Box sx={{ flexGrow: 1, p: 3, background:userPanelBg }}>
         <Box
           sx={{
             height: "100%",
