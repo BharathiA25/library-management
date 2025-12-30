@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Box, TextField, Button, InputAdornment, IconButton, Typography, Paper} from "@mui/material";
+import { Box, TextField, Button, InputAdornment, IconButton, Typography, Paper, CircularProgress} from "@mui/material";
 import { AccountCircle, Email, Lock, Visibility, VisibilityOff,} from "@mui/icons-material";
 import { getAllmembers, editMember } from "../api/MemberApi";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { getThemeControl } from "../utils";
-import CommonShimmer from "../components/CommonShimmer";
 
 function EditProfile() {
   const [memberId, setMemberId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const {selectedColor, inputStyle,buttonStyle,helpingColor} = getThemeControl()
   const navigate = useNavigate()
   const formik = useFormik({
@@ -24,6 +23,7 @@ function EditProfile() {
     }),
     onSubmit: async (values) => {
       try {
+        setLoading(true)
         const payload = { name: values.name };
         if (values.password) payload.password = values.password;
         await editMember(payload, memberId);
@@ -33,13 +33,15 @@ function EditProfile() {
       } catch {
         toast.error("Update failed");
       }
+      finally{
+        setLoading(false)
+      }
     },
   });
 
   useEffect(() => {
     const fetchMember = async () => {
       try{
-        setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) return;
       const { user_id } = jwtDecode(token);
@@ -51,9 +53,6 @@ function EditProfile() {
     }
     catch(err){
       console.log(err)
-    }
-    finally{
-      setLoading(false)
     }
   }
     fetchMember();
@@ -80,8 +79,6 @@ function EditProfile() {
         <Typography variant="h6" fontWeight={600} mb={2} textAlign="center" color= {selectedColor}>
           Edit Profile
         </Typography>
-        {loading ? ( <CommonShimmer type="form"/> 
-        ) : (
         <form onSubmit={formik.handleSubmit}>
           {/* NAME */}
           <TextField
@@ -161,9 +158,9 @@ function EditProfile() {
             variant="contained"
             sx={buttonStyle}
           >
-            Update Profile
+           {loading ? (<CircularProgress size={20} sx={{ color: "white" }}/>) : " Update Profile"}
           </Button>
-        </form> )}
+        </form> 
       </Paper>
     </Box>
   );

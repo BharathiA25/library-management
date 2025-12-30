@@ -4,6 +4,7 @@ const CommonShimmer = ({
   type = "card",
   count = 6,
   height = 200,
+  rowHeight =48,
 }) => {
  
  if (type === "cardGrid") {
@@ -38,24 +39,37 @@ const CommonShimmer = ({
     </Grid>
   );
 }
-
-
-  if (type === "form") {
-    return (
-      <Box>
-        <Skeleton height={56} />
-        <Skeleton height={56} sx={{ mt: 2 }} />
-        <Skeleton height={56} sx={{ mt: 2 }} />
-        <Skeleton height={48} sx={{ mt: 3 }} />
-      </Box>
-    );
-  }
-
   if (type === "table") {
     return (
       <Box>
+        {/* HEADER */}
+        <Box sx={{ display: "flex", gap: 2, mb: 1 }}>
+          <Skeleton height={40} width="8%" />
+          <Skeleton height={40} width="18%" />
+          <Skeleton height={40} width="28%" />
+          <Skeleton height={40} width="12%" />
+          <Skeleton height={40} width="12%" />
+          <Skeleton height={40} width="12%" />
+        </Box>
+
+        {/* ROWS */}
         {[...Array(count)].map((_, i) => (
-          <Skeleton key={i} height={48} sx={{ mb: 1 }} />
+          <Box
+            key={i}
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Skeleton height={rowHeight} width="8%" />
+            <Skeleton height={rowHeight} width="18%" />
+            <Skeleton height={rowHeight} width="28%" />
+            <Skeleton height={rowHeight} width="12%" />
+            <Skeleton height={rowHeight} width="12%" />
+            <Skeleton height={rowHeight} width="12%" />
+          </Box>
         ))}
       </Box>
     );

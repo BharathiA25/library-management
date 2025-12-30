@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from '@mui/material';
 import { getThemeControl } from '../utils';
 function StoreBook({ open, onClose, addToStore, issuing }) {
     const {activeColor} = getThemeControl()
@@ -21,12 +21,9 @@ function StoreBook({ open, onClose, addToStore, issuing }) {
                     variant="contained"
                     onClick={addToStore}
                     disabled={issuing}
-                    sx={{backgroundColor : activeColor, textTransform : 'capitalize', "&:disabled": {
-              backgroundColor: "#1c2626",
-              color: "rgba(255, 255, 255, 0.5)",
-            }}}
+                    sx={{backgroundColor : activeColor, textTransform : 'capitalize'}}
                 >
-                    {issuing ? "Adding..." : "Add to store"}
+                    {issuing ?  <CircularProgress size={18} sx={{ color: "white" }} /> : "Add to store"}
                 </Button>
             </DialogActions>
         </Dialog>

@@ -8,11 +8,14 @@ import { TextField, InputAdornment, Button, IconButton } from "@mui/material";
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material"
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { CircularProgress } from "@mui/material";
+
 
 
 function Login({ switchToSignup}) {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const [loading , settLoading] = useState(false)
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -26,6 +29,7 @@ function Login({ switchToSignup}) {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         console.log("Submitting login form with values:", values);
+        settLoading(true)
         const data = await login(values);
         if (data.access_token) {
           localStorage.setItem('token', data.access_token);
@@ -51,6 +55,7 @@ function Login({ switchToSignup}) {
         )
       } finally {
         setSubmitting(false);
+        settLoading(false)
       }
     }
   });
@@ -113,7 +118,7 @@ function Login({ switchToSignup}) {
           )}
         </div>
         <Button type="submit" fullWidth variant="contained" style={buttonStyle}>
-          Login
+         {loading ? (<CircularProgress size={20} sx={{ color: "white" }} />) : "Login" } 
         </Button>
       </form>
             <p style={{ padding: '20px', marginTop: '10px', textAlign: 'center', color: helpingColor }}> Not a member ? <span style={{ color: spanColor, cursor: 'pointer' }} onClick={switchToSignup}>Signup now</span> </p>

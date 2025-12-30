@@ -9,7 +9,7 @@ import MemberStore from './pages/MemberStore.jsx'
 import EditProfile from './pages/EditProfile.jsx'
 import {ToastContainer} from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom'
 function App() {
   return (
     <>
@@ -19,7 +19,7 @@ function App() {
         <Route path="/" element={<UserLandingpage />} />
 
         <Route path="/admin" element={<AdminDashboard />} >
-        <Route index element={<MemberList />} />
+        <Route index element={<Navigate to="members" replace/> } />
         <Route  path ="members" element={<MemberList />} />
         <Route  path ="books" element={<Books />} />
         </Route>

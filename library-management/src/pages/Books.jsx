@@ -28,6 +28,7 @@ function Books() {
   const [bookCopies, setBookCopies] = useState([]);
   const [copiesCountMap, setCopiesCountMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const { textColor, cardBg, activeColor, copiesColor } = getThemeControl()
   useEffect(() => {
     fetchBooks();
@@ -100,10 +101,20 @@ function Books() {
   }
 
   const handleDeleteBook = async (id) => {
-    await deleteBook(id),
+    try{
+      setDeleting(true)
+      await deleteBook(id),
       setOpenDelete(false);
-    setSelectedBook(null);
+      setSelectedBook(null);
+      toast.success("Book Deleted Succesfully")
+    }
+    catch(err){
+      toast.error(err)
+    }
+    finally{
+    setDeleting(false)  
     fetchBooks()
+    }
   }
 
   // --- COPY MANAGEMENT ---
@@ -126,12 +137,14 @@ function Books() {
       ...prev,
       [bookId]: copies.length
     }));
+    toast.success("Added book count")
   }
   const handleStatusChange = async (copyId, currentStatus) => {
     const nextStatus = currentStatus === "AVAILABLE" ? "ISSUED" : "AVAILABLE";
     await updateCopyStatus(copyId, nextStatus);
     const updated = await getBookCopies(selectedBook.id);
     setBookCopies(updated);
+    toast.success("Status updated")
   };
 
   const handleDeleteCopy = async (copyId) => {
@@ -142,6 +155,7 @@ function Books() {
       ...prev,
       [selectedBook.id]: updated.length
     }));
+    toast.success("Deleted Book count")
     fetchBooks();
   };
 
@@ -257,6 +271,7 @@ function Books() {
         onClose={handleCloseDelete}
         onDelete={handleDeleteBook}
         selectedBook={selectedBook}
+        deleting = {deleting}
       />
 
     </Box>

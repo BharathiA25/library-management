@@ -6,10 +6,12 @@ import  {TextField , InputAdornment, Button, IconButton} from '@mui/material'
 import {AccountCircle, Email, Lock, Visibility, VisibilityOff} from "@mui/icons-material"
 import { toast } from 'react-toastify';
 import { registerMember, getAllmembers } from '../api/MemberApi.js';
+import {CircularProgress} from '@mui/material';
 
 function Signup({ switchToLogin}) {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const [loading, setLoading] = useState(false)
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -31,6 +33,7 @@ function Signup({ switchToLogin}) {
     onSubmit: async (values) => {
       console.log('signup form ', values);
       try{
+        setLoading(true)
         const members = await getAllmembers();
         const emailExists = members.some((member) => member.email === values.email);
         if (emailExists) {
@@ -55,6 +58,9 @@ function Signup({ switchToLogin}) {
     } else {
       toast.error('Registration failed. Please try again.');
     }
+      }
+      finally{
+        setLoading(false)
       }
     },
   })
@@ -176,7 +182,7 @@ const { spanColor, buttonStyle, helpingColor,fieldWrapper,inputStyle,errorStyle 
       </div>
 
       <Button type="submit" fullWidth variant="contained" style={buttonStyle}>
-        Sign Up
+         {loading ? (<CircularProgress size={20} sx={{ color: "white" }} />) : "SignUp" } 
       </Button>
 
     </form>

@@ -92,7 +92,7 @@ function UserDashboard() {
         <Box
           sx={{
             height: "100%",
-            backgroundColor: "#fff",
+            backgroundColor: textColor,
             borderRadius: 2,
             boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
             p: 3,
