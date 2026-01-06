@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Card, CardMedia, CardContent, Typography, Chip, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { ErrorOutline, Store } from "@mui/icons-material";
+import { ErrorOutline } from "@mui/icons-material";
 import { getAllBooks } from "../api/booksApi";
-import { avaiableCount, issueBookforMembers } from "../api/MemberApi";
+import { issueBookforMembers, getBookStore } from "../api/MemberApi";
 import { toast } from "react-toastify";
 import StoreBook from "../dialogBox/StoreBook";
 import { getThemeControl } from "../utils";
+import { jwtDecode } from "jwt-decode";
 import CommonShimmer from "../components/CommonShimmer";
 const IMAGE_BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
 const { activeColor, copiesColor, textColor, inActiveColor } = getThemeControl();
@@ -25,29 +26,26 @@ function BooksforMembers() {
     const fetchBooksWithAvailability = async () => {
         try {
             setLoading(true)
+          const token = localStorage.getItem("token");
+          const decoded = jwtDecode(token);
+          const memberId = decoded.user_id;
+    
+          const storedBooks = await getBookStore(memberId);
+          console.log("book store ", storedBooks)
+
+          const issuedBookTitles = storedBooks.map(b => b.book_title);
+          console.log("issued books ", issuedBookTitles)
             const res = await getAllBooks();
+
             const booksData = Array.isArray(res) ? res : res.data || [];
 
-            const booksWithAvailability = await Promise.all(
-                booksData.map(async (book) => {
-                    try {
-                        const countRes = await avaiableCount(book.id);
-                        console.log("AVAILABLE COUNT RESPONSE:", countRes);
+            const booksWithAvailability = booksData.map((book) => ({
+                ...book,
+                availableCopies: book.available_count || 0,
+                isIssued: issuedBookTitles.includes(book.title), 
 
-                        return {
-                            ...book,
-                            availableCopies: countRes.available_copies || 0
-                        };
-                    } catch (err) {
-                        return {
-                            ...book,
-                            availableCopies: 0
-                        };
-                    }
-                })
-            );
-
-            setBooks(booksWithAvailability);
+            }));
+          setBooks(booksWithAvailability);
         } catch (error) {
             toast.error("Failed to load books")
             console.error("Failed to load books", error);
@@ -62,9 +60,11 @@ function BooksforMembers() {
             : "https://via.placeholder.com/300x400";
     const handleAddToStore = async () => {
         if (!selectedBook) return
+
         try {
             setIssuing(true);
             const res = await issueBookforMembers(selectedBook.id);
+            console.log("id : ", res.issue_id)
             toast.success("Added to store successfully");
             setOpenConfirm(false);
             setSelectedBook(null);
@@ -79,6 +79,7 @@ function BooksforMembers() {
             setIssuing(false)
         }
     }
+    
     return (
         <>
             <Typography variant="h5" fontWeight="bold" mb={3}>
@@ -142,28 +143,45 @@ function BooksforMembers() {
                                         <Typography variant="body2" color="text.secondary">
                                             {book.author}
                                         </Typography>
-                                        {available !== 0 ? (
-                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Typography
-                                                    variant="caption"
-                                                    sx={{ justifyContent: 'flex-start' }}
-                                                    color={available > 0 ? copiesColor : "error.main"}
-                                                >
+                                        {book.isIssued ? (
+                                            <Button
+                                                fullWidth
+                                                 variant="contained"
+                                                 color="error"
+                                                onClick={() => navigate("/member/store")}
+                                                sx={{
+                                                    mt: 2,
+                                                    textTransform: "capitalize",
+                                                    color: textColor,
+                                                }}
+                                            >
+                                                Already added to store
+                                            </Button>
+                                        ) : available > 0 ? (
+                                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <Typography variant="caption" color={copiesColor}>
                                                     Available: {available}
                                                 </Typography>
-                                                <Button onClick={() => {
-                                                    setSelectedBook(book);
-                                                    setOpenConfirm(true);
-                                                }}
-                                                    sx={{ textTransform: 'capitalize', backgroundColor: activeColor, color: textColor, fontSize: '12px' }}>
+                                                <Button
+                                                    onClick={() => {
+                                                        setSelectedBook(book);
+                                                        setOpenConfirm(true);
+                                                    }}
+                                                    sx={{
+                                                        textTransform: "capitalize",
+                                                        backgroundColor: activeColor,
+                                                        color: textColor,
+                                                        fontSize: "12px",
+                                                    }}
+                                                >
                                                     Add to store
                                                 </Button>
-                                            </Box>) : (
-                                            <Typography sx={{ textAlign: 'center', m: 3, color: inActiveColor }}>
+                                            </Box>
+                                        ) : (
+                                            <Typography sx={{ textAlign: "center", m: 3, color: inActiveColor }}>
                                                 Added soon
                                             </Typography>
-                                        )
-                                        }
+                                        )}
 
                                     </CardContent>
                                 </Card>
