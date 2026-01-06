@@ -1,0 +1,33 @@
+import { test, expect } from '@playwright/test';
+
+test('Admin Book test', async ({ page }) => {
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('textbox', { name: 'Email' }).click();
+  await page.getByRole('textbox', { name: 'Email' }).fill('kvaishnavi.242001@gmail.com');
+  await page.getByRole('textbox', { name: 'Password' }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('Vaish@123');
+  await page.locator('form').getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('button', { name: 'Books' }).click();
+  await page.getByRole('button', { name: 'Add Book' }).click();
+  await page.getByRole('textbox', { name: 'Title' }).click();
+  await page.getByRole('textbox', { name: 'Title' }).fill('abcc');
+  await page.getByRole('textbox', { name: 'Author' }).click();
+  await page.getByRole('textbox', { name: 'Author' }).fill('abcc');
+  await page.getByRole('combobox', { name: 'Select Category' }).click();
+  await page.getByRole('option', { name: 'story' }).click();
+  await page.getByText('Choose File').click();
+  await page.locator('div').filter({ hasText: 'Register New BookstoryChoose' }).nth(1).setInputFiles('download.jpg');
+  await page.getByRole('button', { name: 'Add' }).click();
+  await page.getByRole('button').filter({ hasText: /^$/ }).nth(4).click();
+  await page.getByRole('combobox', { name: 'story' }).click();
+  await page.getByRole('option', { name: 'Science' }).click();
+  await page.getByRole('button', { name: 'Update' }).click();
+  await page.getByRole('button').filter({ hasText: /^$/ }).nth(3).click();
+  await page.getByText('Copies: 1').click();
+  await page.getByRole('button').first().click();
+  await page.getByRole('button').first().click();
+  await page.getByRole('button').nth(1).click();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await page.getByLabel('Delete Book', { exact: true }).getByRole('button').filter({ hasText: /^$/ }).click();
+  await page.getByRole('button', { name: 'Delete' }).click();
+});
