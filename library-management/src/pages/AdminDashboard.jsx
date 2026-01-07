@@ -12,18 +12,51 @@ function AdminDashboard() {
   return (
     <Box sx={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* HEADER */}
+      
       <Box sx={{
         height: 70,
         backgroundColor: adminPanelColor,
         color: "#fff",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        fontSize: 20,
+        position : 'relative',
         fontWeight: "bold",
         flexShrink: 0
-      }} > Admin Dashboard </Box>
+      }} > 
+        <Typography
+    sx={{
+      position: "absolute",
+      left: "50%",
+      transform: "translateX(-50%)",
+      fontSize: 20,
+      fontWeight: "bold",
+    }}
+  >
+    Admin Dashboard
+  </Typography>
 
+  {/* Logout Button */}
+  <Button
+    variant="contained"
+    sx={{
+      position: "absolute",
+      right: 20,
+      backgroundColor: "#fff",
+      color: adminPanelColor,
+      fontWeight: "bold",
+      "&:hover": {
+        backgroundColor: "#f0f0f0",
+      },
+    }}
+    onClick={() => {
+      localStorage.removeItem("token")
+      navigate('/')
+    }}
+  >
+    Logout
+  </Button>
+      </Box>
+      
       {/* BODY CONTAINER */}
       <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
 
