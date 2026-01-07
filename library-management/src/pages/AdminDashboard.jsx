@@ -50,7 +50,7 @@ function AdminDashboard() {
     }}
     onClick={() => {
       localStorage.removeItem("token")
-      navigate('/')
+      navigate('/', {replace : true})
     }}
   >
     Logout

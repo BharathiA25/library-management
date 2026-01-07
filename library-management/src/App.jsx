@@ -10,6 +10,7 @@ import EditProfile from './pages/EditProfile.jsx'
 import {ToastContainer} from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
 import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom'
+import ProtectedRoute from './ProtectedRoute.jsx'
 function App() {
   return (
     <>
@@ -18,13 +19,25 @@ function App() {
       <Routes>
         <Route path="/" element={<UserLandingpage />} />
 
-        <Route path="/admin" element={<AdminDashboard />} >
+        <Route 
+          path="/admin" 
+          element={
+           <ProtectedRoute>
+          <AdminDashboard />
+          </ProtectedRoute> 
+          } >
         <Route index element={<Navigate to="members" replace/> } />
         <Route  path ="members" element={<MemberList />} />
         <Route  path ="books" element={<Books />} />
         </Route>
 
-        <Route path='/member' element = {<UserDashboard/>}>
+        <Route 
+        path='/member' 
+        element = {
+         <ProtectedRoute>
+        <UserDashboard/>
+        </ProtectedRoute> 
+        }>
         <Route index element = {<BooksforMembers/>}/>
         <Route path="edit-profile" element={<EditProfile />} />
         <Route path='books' element = {<BooksforMembers/>}/>

@@ -82,7 +82,7 @@ function UserDashboard() {
         <MenuItem onClick={ () => {
           handleMenuClose()
           localStorage.removeItem("token")
-          navigate('/')
+          navigate('/', {replace : true})
         }} sx={{ color: "red" }}>
           <Logout sx={{ mr: 1 }} /> Logout
         </MenuItem>

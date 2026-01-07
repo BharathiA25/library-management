@@ -7,7 +7,7 @@ import { jwtDecode } from 'jwt-decode'
 import { TextField, InputAdornment, Button, IconButton } from "@mui/material";
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material"
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { replace, useNavigate } from 'react-router-dom';
 import { CircularProgress } from "@mui/material";
 
 
@@ -37,11 +37,11 @@ function Login({ switchToSignup}) {
           console.log("Decoded Token:", decodeToken);
           toast.success('login successful');
           if(decodeToken.role === 'admin'){
-          navigate('/admin');
+          navigate('/admin', {replace : true});
           }
           else if(decodeToken.role ==="Member"){
             console.log("Member : ", decodeToken.sub.charAt(0))
-            navigate('/member')
+            navigate('/member', {replace : true})
           }
         }
         else {
