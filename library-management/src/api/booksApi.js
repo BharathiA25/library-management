@@ -11,6 +11,16 @@ export const getAllBooks = async () => {
   return res.data;
 };
 
+export const getUserBooks = async () =>{
+  const res = await axios.get(`${API_URL}/books/user/status`,{
+     headers : {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "ngrok-skip-browser-warning": "true"
+    }
+  })
+  return res.data;
+}
+
 export const addBook = async (data) => {
    const res = await axios.post(`${API_URL}/books/`, data, {
   headers : {

@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Box, Grid, Card, CardMedia, CardContent, Typography, Chip, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ErrorOutline } from "@mui/icons-material";
-import { getAllBooks } from "../api/booksApi";
-import { issueBookforMembers, getBookStore } from "../api/MemberApi";
+import { getUserBooks } from "../api/booksApi";
+import { issueBookforMembers} from "../api/MemberApi";
 import { toast } from "react-toastify";
 import StoreBook from "../dialogBox/StoreBook";
 import { getThemeControl } from "../utils";
-import { jwtDecode } from "jwt-decode";
 import CommonShimmer from "../components/CommonShimmer";
 const IMAGE_BASE_URL = "https://melodi-proprietorial-hue.ngrok-free.dev";
 const { activeColor, copiesColor, textColor, inActiveColor } = getThemeControl();
@@ -26,26 +25,9 @@ function BooksforMembers() {
     const fetchBooksWithAvailability = async () => {
         try {
             setLoading(true)
-          const token = localStorage.getItem("token");
-          const decoded = jwtDecode(token);
-          const memberId = decoded.user_id;
-    
-          const storedBooks = await getBookStore(memberId);
-          console.log("book store ", storedBooks)
-
-          const issuedBookTitles = storedBooks.map(b => b.book_title);
-          console.log("issued books ", issuedBookTitles)
-            const res = await getAllBooks();
-
-            const booksData = Array.isArray(res) ? res : res.data || [];
-
-            const booksWithAvailability = booksData.map((book) => ({
-                ...book,
-                availableCopies: book.available_count || 0,
-                isIssued: issuedBookTitles.includes(book.title), 
-
-            }));
-          setBooks(booksWithAvailability);
+            const res = await getUserBooks();
+           const booksData = Array.isArray(res) ? res : res.data || [];
+           setBooks(booksData);
         } catch (error) {
             toast.error("Failed to load books")
             console.error("Failed to load books", error);
@@ -90,7 +72,7 @@ function BooksforMembers() {
             ) : (
                 <Grid container spacing={3} justifyContent="center">
                     {books.map((book) => {
-                        const available = book.availableCopies || 0;
+                        const available = book.available_count;
 
                         return (
                             <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
@@ -143,7 +125,7 @@ function BooksforMembers() {
                                         <Typography variant="body2" color="text.secondary">
                                             {book.author}
                                         </Typography>
-                                        {book.isIssued ? (
+                                        {book.issue_status === "ISSUED" ? (
                                             <Button
                                                 fullWidth
                                                  variant="contained"
